@@ -1,0 +1,43 @@
+cmake_minimum_required(VERSION 3.27)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+set(CMAKE_CXX_STANDARD 20)
+set(LOCALBIN ON)
+if (STATICBIN)
+  message(STATUS "fully static binary will be built with avx2, aes, and -static")
+  set(COMPILER_FLAGS "-Wall --std=c++20 -O3 -mavx2 -maes -funroll-loops")
+  set(LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
+elseif (SERVERBIN)
+  message(STATUS "partial static binary will be built with avx2 and aes, without -static")
+  set(COMPILER_FLAGS "-Wall --std=c++20 -O3 -march=native -funroll-loops")
+  set(LINKER_FLAGS "-static-libstdc++ -static-libgcc")
+elseif (LOCALBIN)
+  message(STATUS "locally optimized static binary will be built with arch=native")
+  set(COMPILER_FLAGS "-Wall --std=c++20 -O3 -march=native -funroll-loops")
+  set(LINKER_FLAGS "-static-libstdc++ -static-libgcc -static")
+else()
+  message(FATAL_ERROR "Build option should be selected: STATICBIN, SERVERBIN, or LOCALBIN")
+endif()
+set(CMAKE_CXX_FLAGS "${COMPILER_FLAGS}")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LINKER_FLAGS}")
+
+find_program(TIDY_FOUND clang-tidy-15)
+if(TIDY_FOUND)
+  message(STATUS "Found clang-tidy")
+  set(CMAKE_CXX_CLANG_TIDY clang-tidy-15 -checks='*')
+else()
+  message(STATUS "Cannot find clang-tidy")
+endif()
+
+add_library(aesmodel INTERFACE aes_model.hpp)
+add_library(ortoolskit INTERFACE ortools_kit.hpp)
+
+add_executable(search_diff search_diff.cpp)
+target_link_libraries(search_diff ortools::ortools ortoolskit aesmodel)
+
+add_executable(search_linear search_linear.cpp)
+target_link_libraries(search_linear ortools::ortools ortoolskit aesmodel)
+
+add_executable(search_integral search_integral.cpp)
+target_link_libraries(search_integral ortools::ortools ortoolskit aesmodel)

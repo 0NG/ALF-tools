@@ -9,7 +9,7 @@ const struct ALF_Profile
 {
 	//__m128i encPi;
 	//__m128i decPi;
-	//__m128i encAlpha;
+	__m128i encAlpha;
 	__m128i encBeta;
 	__m128i encSigma;
 	__m128i decAlpha;
@@ -26,7 +26,7 @@ _AlfProfile[14] = {
 { // -- n=2 -------------
 // _mm_setr_epi8( 0, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 0, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8( 2, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 0,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encSigma
 _mm_setr_epi8( 0, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // decAlpha
@@ -40,7 +40,7 @@ _mm_setr_epi8(99,99,82,82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), // const A
 { // -- n=3 -------------
 // _mm_setr_epi8( 0, 2, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 0, 2, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8( 3, 3, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 0,-1,-1,-1,-1, 2,-1,-1,-1,-1, 1,-1,-1,-1,-1,-1), // encSigma
 _mm_setr_epi8( 0, 1, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // decAlpha
@@ -54,7 +54,7 @@ _mm_setr_epi8(-91,-91,99,82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), // const A
 { // -- n=4 -------------
 // _mm_setr_epi8( 0, 1, 2, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 0, 1, 2, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 0,-1,-1,-1,-1, 1,-1,-1,-1,-1, 2,-1,-1,-1,-1, 3), // encSigma
 _mm_setr_epi8( 0, 1, 2, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // decAlpha
@@ -68,7 +68,7 @@ _mm_setr_epi8( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), // const A
 { // -- n=5 -------------
 // _mm_setr_epi8( 1, 0, 4, 2, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 1, 0, 3, 4, 2,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 1,-1, 1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8( 4, 4, 4, 4, 7,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 1,-1,-1, 0, 3, 0,-1,-1,-1, 0, 4,-1,-1,-1,-1, 2), // encSigma
 _mm_setr_epi8( 0, 1, 2, 3, 4,-1, 4,-1,-1,-1,-1,-1,-1,-1,-1,-1), // decAlpha
@@ -82,7 +82,7 @@ _mm_setr_epi8(99,99,99,99, 0,82, 0,82, 0, 0, 0, 0, 0, 0, 0, 0), // const A
 { // -- n=6 -------------
 // _mm_setr_epi8( 2, 1, 0, 5, 4, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 2, 1, 0, 5, 4, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 5,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8( 2, 3, 6, 7, 2, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 2,-1,-1,-1, 4, 1,-1,-1,-1, 3, 0,-1,-1,-1,-1, 5), // encSigma
 _mm_setr_epi8( 0, 1,-1,-1, 2, 3, 4, 5,-1,-1,-1,-1,-1,-1,-1,-1), // decAlpha
@@ -96,7 +96,7 @@ _mm_setr_epi8( 0, 0,82,82,99,-91, 0,-58, 0, 0, 0, 0, 0, 0, 0, 0), // const A
 { // -- n=7 -------------
 // _mm_setr_epi8( 0, 4, 3, 6, 2, 5, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 0, 6, 4, 2, 1, 5, 3,-1,-1,-1,-1,-1,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8( 1, 7, 1, 1, 1, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 0,-1,-1,-1, 2, 4,-1,-1,-1, 5, 3,-1,-1,-1, 1, 6), // encSigma
 _mm_setr_epi8( 0,-1, 2, 3, 4, 5, 6, 1,-1,-1,-1,-1,-1,-1,-1,-1), // decAlpha
@@ -110,7 +110,7 @@ _mm_setr_epi8( 0,82, 0, 0,99,99,-91,-58, 0, 0, 0, 0, 0, 0, 0, 0), // const A
 { // -- n=8 -------------
 // _mm_setr_epi8( 0, 1, 4, 5, 2, 3, 6, 7,-1,-1,-1,-1,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 0, 1, 4, 5, 2, 3, 6, 7,-1,-1,-1,-1,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7,-1,-1,-1,-1,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 0,-1,-1, 7, 2, 1,-1,-1,-1, 3, 4,-1,-1,-1, 6, 5), // encSigma
 _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7,-1,-1,-1,-1,-1,-1,-1,-1), // decAlpha
@@ -124,7 +124,7 @@ _mm_setr_epi8( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), // const A
 { // -- n=9 -------------
 // _mm_setr_epi8( 2, 4, 1, 5, 3, 6, 7, 8, 0,-1,-1,-1,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 8, 2, 0, 4, 1, 3, 5, 6, 7,-1,-1,-1,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 1,-1, 1,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 1,-1, 1,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8( 8, 8, 8, 8,-1,-1,-1,-1,11,-1,-1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 2,-1,-1, 8, 3, 4,-1, 4, 0, 6, 1,-1,-1, 4, 7, 5), // encSigma
 _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8,-1, 8,-1,-1,-1,-1,-1), // decAlpha
@@ -138,7 +138,7 @@ _mm_setr_epi8(99,99,99,99, 0, 0, 0, 0, 0,82, 0,82, 0, 0, 0, 0), // const A
 { // -- n=10 -------------
 // _mm_setr_epi8( 7, 4, 1, 3, 0, 2, 5, 9, 6, 8,-1,-1,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 4, 2, 5, 3, 1, 6, 8, 0, 9, 7,-1,-1,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,-1,-1,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,-1,-1,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8( 2, 3,10,11,-1,-1,-1,-1, 2, 3,-1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 7,-1,-1, 9, 0, 4,-1,-1, 6, 2, 1,-1,-1, 8, 5, 3), // encSigma
 _mm_setr_epi8( 0, 1,-1,-1, 4, 5, 6, 7, 2, 3, 8, 9,-1,-1,-1,-1), // decAlpha
@@ -152,7 +152,7 @@ _mm_setr_epi8( 0, 0,82,82, 0, 0, 0, 0,99,-91, 0,-58, 0, 0, 0, 0), // const A
 { // -- n=11 -------------
 // _mm_setr_epi8( 5, 7, 9, 8, 1, 0, 2, 4, 6, 3,10,-1,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 5, 4, 6, 9, 7, 0, 8, 1, 3, 2,10,-1,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,-1,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,-1,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8( 1,11, 1, 1,-1,-1,-1,-1, 1, 1, 1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 5,-1,10, 4, 1, 7,-1,-1, 6, 0, 9,-1,-1, 3, 2, 8), // encSigma
 _mm_setr_epi8( 0,-1, 2, 3, 4, 5, 6, 7, 8, 9,10, 1,-1,-1,-1,-1), // decAlpha
@@ -166,7 +166,7 @@ _mm_setr_epi8( 0,82, 0, 0, 0, 0, 0, 0,99,99,-91,-58, 0, 0, 0, 0), // const A
 { // -- n=12 -------------
 // _mm_setr_epi8( 0, 5, 6,10, 4, 9, 2,11, 8, 1, 3, 7,-1,-1,-1,-1), // encPi
 // _mm_setr_epi8( 0, 9, 6,10, 4, 1, 2,11, 8, 5, 3, 7,-1,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,-1,-1,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,-1,-1,-1,-1), // encAlpha
 _mm_setr_epi8(-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1), // encBeta
 _mm_setr_epi8( 0,-1, 3,11, 4, 5,-1, 7, 8, 9, 6,-1,-1, 1, 2,10), // encSigma
 _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,-1,-1,-1,-1), // decAlpha
@@ -180,7 +180,7 @@ _mm_setr_epi8( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), // const A
 { // -- n=13 -------------
 // _mm_setr_epi8( 5, 7, 8, 1, 2, 9, 4,10,11, 0, 6,12, 3,-1,-1,-1), // encPi
 // _mm_setr_epi8( 9, 3, 4,12, 6, 0,10, 1, 2, 5, 7, 8,11,-1,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12, 1,-1, 1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12, 1,-1, 1), // encAlpha
 _mm_setr_epi8(12,12,12,12, 8, 9,10,11,-1,-1,-1,-1,15,-1,-1,-1), // encBeta
 _mm_setr_epi8( 5, 7, 6,10, 2, 7,-1,12,11, 9, 8, 7, 3, 0, 4, 1), // encSigma
 _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,-1,12,-1), // decAlpha
@@ -194,7 +194,7 @@ _mm_setr_epi8(99,99,99,99, 0, 0, 0, 0, 0, 0, 0, 0, 0,82, 0,82), // const A
 { // -- n=14 -------------
 // _mm_setr_epi8( 4,11, 8, 3, 5, 1, 9, 2, 6, 0,10,13, 7,12,-1,-1), // encPi
 // _mm_setr_epi8( 9, 5, 7, 3, 0, 4, 8,12, 2, 6,10, 1,13,11,-1,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,-1,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,-1,-1), // encAlpha
 _mm_setr_epi8( 2, 3,14,15,-1,-1,-1,-1,-1,-1,-1,-1, 2, 3,-1,-1), // encBeta
 _mm_setr_epi8( 4,12,10, 2, 5,11,-1,13, 6, 1, 8,-1, 7, 0, 9, 3), // encSigma
 _mm_setr_epi8( 0, 1,-1,-1, 4, 5, 6, 7, 8, 9,10,11, 2, 3,12,13), // decAlpha
@@ -208,7 +208,7 @@ _mm_setr_epi8( 0, 0,82,82, 0, 0, 0, 0, 0, 0, 0, 0,99,-91, 0,-58), // const A
 { // -- n=15 -------------
 // _mm_setr_epi8( 4, 8,12, 7, 5, 9,13, 2, 6,10, 1, 3,14, 0,11,-1), // encPi
 // _mm_setr_epi8(13,10, 7,11, 0, 4, 8, 3, 1, 5, 9,14, 2, 6,12,-1), // decPi
-// _mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,-1), // encAlpha
+_mm_setr_epi8( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,-1), // encAlpha
 _mm_setr_epi8( 1,15, 1, 1,-1,-1,-1,-1,-1,-1,-1,-1, 1, 1, 1,-1), // encBeta
 _mm_setr_epi8( 4, 0, 1, 2, 5, 8,11, 3, 6, 9,12,-1,14,10,13, 7), // encSigma
 _mm_setr_epi8( 0,-1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14, 1), // decAlpha
@@ -318,7 +318,10 @@ struct ALFnt
 	void _int_Encrypt_01(uint8_t* out /* [16] */, uint8_t* in /* [16] */)
 	{
 		__m128i U, E, X = load128(in);
-		E = _mm_and_si128(_mm_bslli_si128(load128(in + n), 3), M);
+		// replace the below line to prevent reading from outside the buffer
+		// E = _mm_and_si128(_mm_bslli_si128(load128(in + n), 3), M);
+		E = _mm_and_si128(_mm_insert_epi8(F->encSigma, in[n], 3), M);
+
 		for (int r = 0; r < Rounds; r += 2)
 			do {
 				U = aesenc(shuffle(X, F->encSigma), RK[r]);
@@ -337,7 +340,10 @@ struct ALFnt
 	{
 		__m128i E, Y, X = load128(in);
 		X = _mm_aesenclast_si128(shuffle(X, F->encSigma), c_00);
-		E = _mm_bslli_si128(load128(in + n), 3);
+		// replace the below line to prevent reading from outside the buffer
+		// E = _mm_bslli_si128(load128(in + n), 3);
+		E = _mm_insert_epi8(F->encSigma, in[n], 3);
+
 		for (int r = Rounds - 2; r >= 0; r -= 2)
 			do {
 				X = aesdec(shuffle(X, F->decSigma), c_00);
@@ -397,13 +403,41 @@ struct ALFnt
 		store128(out, X);
 	}
 
+#if 0	/* Exampled non-optimised enc/dec functions for binary ALF-n-t */
+	void _int_Encrypt_11(uint8_t* out /* [16] */, uint8_t* in /* [16] */)
+	{	__m128i U, X = load128(in), E = load128(in + n - 3);
+		for (int r = 0; r < Rounds; r++)
+		{	U = aesenc(shuffle(X, F->encSigma), RK[r]);
+			X = xor3(U, shuffle(U, F->encBeta), shuffle(E, F->Rho));
+			E = _UpdateE(E, U, M);
+		}
+		memcpy(out, &X, n);
+		out[n] = _mm_extract_epi8(E, 3);
+	}
+
+	void _int_Decrypt_11(uint8_t* out /* [16] */, uint8_t* in /* [16] */)
+	{	__m128i Y, X = load128(in), E = load128(in + n - 3);
+		X = _mm_aesenclast_si128(shuffle(X, F->encSigma), c_00); // Auxil
+		for (int r = Rounds - 1; r >= 0; r--)
+		{	X = aesdec(shuffle(X, F->decSigma), RK[r]);
+			E = _UpdateE(xor2(E, B), xor2(X, RK[r]), M);
+			X = xor3(X, shuffle(X, F->decBeta), shuffle(E, F->Rho));
+		}
+		X = _mm_aesdeclast_si128(shuffle(X, F->decTau), c_00);	// SRF
+		memcpy(out, &X, n);
+		out[n] = _mm_extract_epi8(E, 3);
+	}
+#else
 	// Binary, t>0
 	void _int_Encrypt_11(uint8_t* out /* [16] */, uint8_t* in /* [16] */)
 	{
 		__m128i U, E, X = shuffle(load128(in), F->encSigma);
 		__m128i encBetaSigma = combine(F->encBeta, F->encSigma);
 		__m128i encRhoSigma = combine(F->Rho, F->encSigma);
-		E = _mm_and_si128(_mm_bslli_si128(load128(in + n), 3), M);
+		// replace the below line to prevent reading from outside the buffer
+		// E = _mm_and_si128(_mm_bslli_si128(load128(in + n), 3), M);
+		E = _mm_and_si128(_mm_insert_epi8(F->encSigma, in[n], 3), M);
+
 		for (int r = 0; r < Rounds - 2; r += 2)
 		{
 			U = aesenc(X, RK[r]);
@@ -430,7 +464,10 @@ struct ALFnt
 		__m128i decBetaSigma = combine(F->decBeta, F->decSigma);
 		__m128i decRhoSigma = combine(F->Rho, F->decSigma);
 		X = _mm_aesenclast_si128(shuffle(X, F->encSigma), c_00);
-		E = _mm_bslli_si128(load128(in + n), 3);
+		// replace the below line to prevent reading from outside the buffer
+		// E = _mm_bslli_si128(load128(in + n), 3);
+		E = _mm_insert_epi8(F->encSigma, in[n], 3);
+
 		X = shuffle(X, F->decSigma);
 		for (int r = Rounds - 1; r > 1; r -= 2)
 		{
@@ -456,7 +493,7 @@ struct ALFnt
 		store128(out, X);
 		out[n] = _mm_extract_epi8(E, 3);
 	}
-
+#endif
 
 
 	// -----------------------------------
@@ -490,7 +527,7 @@ struct ALFnt
 		if (n >= 7)
 		{
 			m1 = *(uint64_t*)(((uint8_t*)_Qmax.u) + n - 7);
-			m0 = _Qmax.u[0] << ((15 - n) << 3);
+			m0 = (n == 7) ? 0 : (_Qmax.u[0] << ((15 - n) << 3));
 		}
 		else
 		{

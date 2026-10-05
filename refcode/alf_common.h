@@ -22,7 +22,7 @@ inline int get_bitwidth64(uint64_t x)
 #else
 // ------------------------------------
 // GCC. was tested with:
-// g++ fpelib.cpp -o fpelib.a -Ofast -march=native -frename-registers -w
+// g++ app.cpp -o app.a -Ofast -march=native -frename-registers -w
 #include <x86intrin.h>
 #define _GCC_U64_TYPE long long unsigned int
 #define _mm_setr_epi64x(a,b) _mm_set_epi64x((__int64_t)(b), (__int64_t)(a))
@@ -30,6 +30,7 @@ inline int get_bitwidth64(uint64_t x)
 
 inline int get_bitwidth64(uint64_t x)
 {
+	/* [Fixed] */ if (!x) return 0;
 	return 64 - __builtin_clzll(x);
 }
 

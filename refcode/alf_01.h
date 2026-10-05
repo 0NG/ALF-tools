@@ -75,7 +75,7 @@ struct ALF0
 		uint8_t tmp[256];
 		for (int i = 0; i <= Qmax; i++)
 			tmp[sbox[i]] = i;
-		memcpy(sbox, tmp, 256);
+		memcpy(sbox, tmp, 1 + (unsigned int)Qmax);
 	}
 };
 

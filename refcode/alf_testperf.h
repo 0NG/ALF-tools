@@ -185,7 +185,7 @@ struct AlfTest
 
 		// Compute output vectors
 		ALF A;
-		if (N == 1)
+		if (N == 1 && !Qsame)
 			A.EngineInit(Qmax);
 		else if (Qvec_off == 0xffff)
 			A.EngineInit(N, Qsame);

@@ -80,7 +80,10 @@ struct ALF
 			if (Qmax_distinct_ref) // stream of distinct modulus
 				ktm.KeyInit(key, AppID, N, Qmax_distinct_ref);
 			else // stream of same modulus
-				ktm.KeyInit(key, AppID, N, (uint16_t)pack.Qmax.u[0]);
+				/* [Fixed] according to the paper, we should use Q=q in this place, not q^N */
+				ktm.KeyInit(key, AppID, N, (uint16_t)Qmax_same_modulus);
+				/* [Was wrong] ktm.KeyInit(key, AppID, N, (uint16_t)pack.Qmax.u[0]); */
+
 	}
 
 	inline void TweakInit(uint8_t tweak[16])
@@ -340,9 +343,9 @@ struct ALF
 		} while (0);
 		
 		uint32_t pool[8], pool_idx = 8;
+		uint16_t tmpA[16], tmpB[16], tmpC[16];
 
-		// Now when Rocca-S state is initialised, EncDec with Radix-stream
-		
+		// Now when Rocca-S state is initialised, EncDec with Radix-stream		
 		__m256i Q = _mm256_set1_epi16(Qmax_same_modulus + 1); /* modulus(16) */
 		__m256i H = _mm256_cmpeq_epi16(Q, _mm256_setzero_si256()); // to handle Q=2^16
 		__m256i c_one = _mm256_set1_epi16(1);
@@ -353,33 +356,43 @@ struct ALF
 			__m256i M0, M1, M2 /* M=Z*Q(48) */, F0, F1 /* cmp res */;
 			__m256i T1;
 
-			if (Qmax_distinct_ref)
+			if ((i + 16) > N)
+			{	// ending routine
+				if (Qmax_distinct_ref)
+				{
+					memset(tmpA, -1, 32);
+					memcpy(tmpA, Qmax_distinct_ref + i, (N - i) * 2);
+					Q = _mm256_add_epi16(_mm256_loadu_si256((__m256i*)tmpA), c_one);
+				}
+				else
+				{
+					_mm256_storeu_si256((__m256i*)tmpA, Q);
+					memset(tmpA + (N - i), 0, 32 - (N - i) * 2);
+					Q = _mm256_loadu_si256((__m256i*)tmpA);
+				}
+				H = _mm256_cmpeq_epi16(Q, _mm256_setzero_si256()); // to handle Q=2^16
+			}
+			else if (Qmax_distinct_ref)
 			{
 				// H=0xffff where Q=0x0000 (meaning Q=2^16)
 				Q = _mm256_add_epi16(_mm256_loadu_si256((__m256i*)(Qmax_distinct_ref + i)), c_one);
 				H = _mm256_cmpeq_epi16(Q, _mm256_setzero_si256()); // to handle Q=2^16
 			}
 
-			if ((i + 16) > N)
-			{	// ending routine, truncate Q
-				memset(((uint16_t*)&Q) + (N - i), 0, (16 - (N - i)) * 2);
-				H = _mm256_cmpeq_epi16(Q, _mm256_setzero_si256()); // to handle Q=2^16
-			}
-
 			// Retrieve two keystreams (Z1||Z0) -- representing 32-bit integers
 			// compute (M2||M1||M0) = Q * (Z1||Z0) -- results in 48-bit integers
-			__m128i C0, C1;
+			__m128i C0, C1, zero = c_00;
 			SC_Keystream(S, C0, C1);
 			Z0 = _mm256_setr_m128i(C0, C1);
 			M1 = _mm256_mulhi_epu16(Q, Z0);
 			M0 = _mm256_mullo_epi16(Q, Z0);
-			SC_Round(S, c_00, c_00);
+			SC_Round(S, zero, zero);
 			SC_Keystream(S, C0, C1);
 			Z1 = _mm256_setr_m128i(C0, C1);
 			M2 = _mm256_mulhi_epu16(Q, Z1);
 			T1 = _mm256_mullo_epi16(Q, Z1);
 			M2 = _mm256_blendv_epi8(M2, Z1, H); // to handle Q=2^16
-			SC_Round(S, c_00, c_00);
+			SC_Round(S, zero, zero);
 			
 			// Add the middle M1 += T1 and propagate the add-carry to M2
 			M1 = _mm256_add_epi16(M1, T1); 
@@ -397,37 +410,45 @@ struct ALF
 
 			// Actual enc/dec with the IN stream and store to the OUT stream
 			__m256i IN = _mm256_loadu_si256((__m256i*)(in + i));
-			
+
 			if(is_decrypt)
 				M2 = _mm256_submod_epu16(IN, M2, Q);
 			else
 				M2 = _mm256_addmod_epu16(IN, M2, Q);
 
 			if ((i + 16) > N)
-				memcpy(out + i, &M2, (N - i) * 2);
+			{
+				_mm256_storeu_si256((__m256i*)tmpA, M2);
+				memcpy(out + i, tmpA, (N - i) * 2);
+			}
 			else
 				_mm256_storeu_si256((__m256i*)(out + i), M2);
 
 			if (!mask) continue;
 
 			// Special routine in case (M1*2^16 + M0) < Q (ps: note M1 is zero)
-			// Probability to get here is very small compared to the above critical loop			
+			// Probability to get here is very small compared to the above critical loop
+			_mm256_storeu_si256((__m256i*)tmpA, Q);
+			_mm256_storeu_si256((__m256i*)tmpB, M0);
+			_mm256_storeu_si256((__m256i*)tmpC, IN);
+
 			for (int k = 0; mask; k++, mask >>= 2)
 				if (mask & 1)
 				{
-					uint32_t s = ((uint16_t*)&Q)[k], l = ((uint16_t*)&M0)[k];
-					uint32_t x = ((uint16_t*)&IN)[k];
+					uint32_t s = tmpA[k]; // ((uint16_t*)&Q)[k];
+					uint32_t l = tmpB[k]; // ((uint16_t*)&M0)[k];
 					uint32_t t = ((uint32_t)-(int32_t)s) % s;
 					if (l >= t) continue;
+					uint32_t x = tmpC[k]; // ((uint16_t*)&IN)[k];
 					uint64_t m = 0;
 					do
 					{
 						if (pool_idx == 8)
 						{
 							pool_idx = 0;
-							__m128i C0, C1;
+							__m128i C0, C1, zero = c_00;
 							SC_Keystream(S, C0, C1);
-							SC_Round(S, c_00, c_00);
+							SC_Round(S, zero, zero);
 							store128(pool, C0);
 							store128(pool + 4, C1);
 						}

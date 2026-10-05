@@ -15,7 +15,7 @@ struct ALFNonce
 	}
 
 	// if Qmax_distinct==NULL then the same modulus is assumed
-	void EncDec_Nonce(uint8_t nonce[16], int N, char is_decrypt, uint16_t* out, uint16_t* in,
+	void EncDec_Nonce(uint8_t nonce[16], uint64_t N, char is_decrypt, uint16_t* out, uint16_t* in,
 		uint16_t Qmax_same_modulus, uint16_t* Qmax_distinct = NULL)
 	{
 		__m128i S0, S1, S2, S3, S4, S5, S6, S7;
@@ -46,6 +46,7 @@ struct ALFNonce
 		__m256i H = _mm256_cmpeq_epi16(Q, _mm256_setzero_si256()); // to handle Q=2^16
 		__m256i c_one = _mm256_set1_epi16(1);
 		uint32_t pool[8], pool_idx = 8;
+		uint16_t tmpA[16], tmpB[16], tmpC[16];
 
 		for (uint64_t i = 0; i < N; i += 16)
 		{
@@ -53,16 +54,26 @@ struct ALFNonce
 			__m256i M0, M1, M2 /* M=Z*Q(48) */, F0, F1 /* cmp res */;
 			__m256i T1;
 
-			if (Qmax_distinct)
+			if ((i + 16) > N)
+			{	// ending routine
+				if (Qmax_distinct)
+				{
+					memset(tmpA, -1, 32);
+					memcpy(tmpA, Qmax_distinct + i, (N - i) * 2);
+					Q = _mm256_add_epi16(_mm256_loadu_si256((__m256i*)tmpA), c_one);
+				}
+				else
+				{
+					_mm256_storeu_si256((__m256i*)tmpA, Q);
+					memset(tmpA + (N - i), 0, 32 - (N - i) * 2);
+					Q = _mm256_loadu_si256((__m256i*)tmpA);
+				}
+				H = _mm256_cmpeq_epi16(Q, _mm256_setzero_si256()); // to handle Q=2^16
+			}
+			else if (Qmax_distinct)
 			{
 				// H=0xffff where Q=0x0000 (meaning Q=2^16)
 				Q = _mm256_add_epi16(_mm256_loadu_si256((__m256i*)(Qmax_distinct + i)), c_one);
-				H = _mm256_cmpeq_epi16(Q, _mm256_setzero_si256()); // to handle Q=2^16
-			}
-
-			if ((i + 16) > N)
-			{	// ending routine, truncate Q
-				memset(((uint16_t*)&Q) + (N - i), 0, (16 - (N - i)) * 2);
 				H = _mm256_cmpeq_epi16(Q, _mm256_setzero_si256()); // to handle Q=2^16
 			}
 
@@ -104,7 +115,10 @@ struct ALFNonce
 				M2 = _mm256_addmod_epu16(IN, M2, Q);
 
 			if ((i + 16) > N)
-				memcpy(out + i, &M2, (N - i) * 2);
+			{
+				_mm256_storeu_si256((__m256i*)tmpA, M2);
+				memcpy(out + i, tmpA, (N - i) * 2);
+			}
 			else
 				_mm256_storeu_si256((__m256i*)(out + i), M2);
 
@@ -112,22 +126,27 @@ struct ALFNonce
 
 			// Special routine in case (M1*2^16 + M0) < Q (ps: note M1 is zero)
 			// Probability to get here is very small compared to the above critical loop			
+			_mm256_storeu_si256((__m256i*)tmpA, Q);
+			_mm256_storeu_si256((__m256i*)tmpB, M0);
+			_mm256_storeu_si256((__m256i*)tmpC, IN);
+
 			for (int k = 0; mask; k++, mask >>= 2)
 				if (mask & 1)
 				{
-					uint32_t s = ((uint16_t*)&Q)[k], l = ((uint16_t*)&M0)[k];
-					uint32_t x = ((uint16_t*)&IN)[k];
+					uint32_t s = tmpA[k]; // ((uint16_t*)&Q)[k];
+					uint32_t l = tmpB[k]; // ((uint16_t*)&M0)[k];
 					uint32_t t = ((uint32_t)-(int32_t)s) % s;
 					if (l >= t) continue;
+					uint32_t x = tmpC[k]; // ((uint16_t*)&IN)[k];
 					uint64_t m = 0;
 					do
 					{
 						if (pool_idx == 8)
 						{
 							pool_idx = 0;
-							__m128i C0, C1;
+							__m128i C0, C1, z = c_00;
 							SC_Keystream(S, C0, C1);
-							SC_Round(S, c_00, c_00);
+							SC_Round(S, z, z);
 							store128(pool, C0);
 							store128(pool + 4, C1);
 						}
